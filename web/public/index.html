@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demo Depot Starter</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23405bff%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Controlled by the promo-banner flag. Hidden until the flag is on. -->
+  <div id="promo" class="promo" hidden>
+    <strong>Free shipping all week</strong>
+    <span>Orders over $50 ship free. No code needed.</span>
+  </div>
+
+  <header class="site-header">
+    <div class="brand"><span class="logo"></span><span id="customer">Acme Corp</span></div>
+    <nav><a href="#">Shop</a><a href="#">Stories</a><a href="#">Support</a></nav>
+  </header>
+
+  <main class="layout">
+    <section class="hero">
+      <p class="eyebrow">Demo Depot starter</p>
+      <h1>One flag. One listener. Zero reloads.</h1>
+      <p class="lede">
+        This page evaluates a single LaunchDarkly flag in the browser and subscribes to changes.
+        Flip <code id="flag-key-inline">promo-banner</code> in LaunchDarkly and the banner above
+        appears or disappears the moment the change streams in.
+      </p>
+      <div class="cards">
+        <article class="card"><h3>Fresh project per launch</h3><p>Every launch from Demo Depot gets its own LaunchDarkly project, seeded from <code>ld/seed.json</code>.</p></article>
+        <article class="card"><h3>Config at runtime</h3><p>The browser fetches its client-side ID from <code>/api/config</code>. Nothing is baked into the image.</p></article>
+        <article class="card"><h3>Live updates</h3><p><code>client.on("change:promo-banner", …)</code> re-renders the banner. No polling, no refresh.</p></article>
+      </div>
+    </section>
+
+    <aside class="panel" aria-live="polite">
+      <h2>Flag state</h2>
+      <dl>
+        <dt>Flag</dt><dd><code id="flag-key">promo-banner</code></dd>
+        <dt>Value</dt><dd><span id="flag-value" class="pill pill-muted">unknown</span></dd>
+        <dt>Connection</dt><dd><span id="status" class="pill pill-muted">loading config…</span></dd>
+        <dt>Project</dt><dd><code id="project">—</code></dd>
+        <dt>Environment</dt><dd><code id="env">—</code></dd>
+        <dt>Context</dt><dd><code id="context-key">—</code></dd>
+      </dl>
+      <a id="ld-link" class="button" href="#" target="_blank" rel="noopener" hidden>Open flag in LaunchDarkly</a>
+      <h3>Event log</h3>
+      <ol id="log" class="log"></ol>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <span>Demo Depot starter</span>
+    <span id="meta"></span>
+  </footer>
+
+  <script src="/vendor/ldclient.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

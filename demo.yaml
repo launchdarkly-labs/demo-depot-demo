@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://demodepot.launchdarklydemos.com/schemas/demo.schema.json
+schemaVersion: 1
+slug: demo-depot-starter
+name: "Demo Depot Starter: One Flag, Live"
+summary: The smallest depot-ready demo. A one-page site flips a promo banner the instant a LaunchDarkly flag changes.
+owners:
+  - kcochran@launchdarkly.com
+tags: [feature-management, retail]
+media:
+  cover: ./media/cover.png
+links:
+  docs: https://github.com/launchdarkly-labs/demo-depot-demo
+parameters:
+  - name: CUSTOMER_NAME
+    label: Prospect name
+    type: string
+    default: Acme Corp
+runtime:
+  ingress:
+    container: web
+    port: 3000
+    healthCheck: { path: /healthz }
+  containers:
+    - name: web
+      build: { context: ./web }
+      cpu: 512
+      memory: 1024
+      env: { NODE_ENV: production }
+capabilities: []
+launchdarkly:
+  seed: ./ld/seed.json
+  apiToken: none
+access:
+  default: sso
+  allowPublic: false
+lifecycle:
+  pausable: true
+verify:
+  http:
+    - path: /healthz
+      expectStatus: 200
+    - path: /
+      expectStatus: 200
+      expectBodyContains: Flag state
+    - path: /api/config
+      expectStatus: 200
+      expectBodyContains: '"flagKey":"promo-banner"'

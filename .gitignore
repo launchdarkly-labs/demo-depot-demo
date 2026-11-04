@@ -1,0 +1,12 @@
+# secrets and local config
+.env*
+!.env.example
+# node
+node_modules/
+npm-debug.log*
+# ddu run output
+.dd/
+# os / editor
+.DS_Store
+.vscode/
+.idea/

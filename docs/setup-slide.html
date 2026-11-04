@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Demo Depot: setup in one slide</title>
+<style>
+  :root {
+    --bg: #12141c; --panel: #1a1d28; --line: #2a2e3d; --ink: #f5f6fa; --muted: #aab0c4;
+    --accent: #405bff; --accent2: #7b42bc; --code-bg: #0d0f15; --green: #3ddc84;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  html, body { margin: 0; background: #000; }
+  .slide {
+    width: 1920px; height: 1080px; box-sizing: border-box; padding: 60px 80px 52px;
+    background: var(--bg); color: var(--ink); position: relative; overflow: hidden;
+    background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .slide::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: linear-gradient(180deg, var(--accent), var(--accent2)); }
+  .eyebrow { color: #7d90ff; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 20px; margin: 0 0 10px; }
+  h1 { font-size: 52px; letter-spacing: -0.02em; margin: 0 0 8px; line-height: 1.05; }
+  .sub { color: var(--muted); font-size: 22px; margin: 0 0 30px; }
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .col { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 24px 26px; height: 760px; box-sizing: border-box; overflow: hidden; }
+  .step { display: flex; align-items: center; gap: 14px; margin: 0 0 18px; }
+  .num { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-weight: 800; font-size: 22px; }
+  .step h2 { font-size: 27px; margin: 0; letter-spacing: -0.01em; }
+  .when { color: var(--muted); font-size: 17px; margin: -10px 0 14px 58px; }
+  p, li { font-size: 19px; line-height: 1.38; color: var(--ink); margin: 0 0 10px; }
+  ul { margin: 0 0 8px; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  li b { color: #fff; }
+  pre { margin: 6px 0 14px; padding: 12px 14px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px;
+        font: 16.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: #e8ebf5; white-space: pre-wrap; word-break: break-all; }
+  pre .c { color: #6f778f; }
+  pre .p { color: var(--green); }
+  .foot { position: absolute; left: 80px; right: 80px; bottom: 34px; display: flex; justify-content: space-between; color: var(--muted); font-size: 19px; border-top: 1px solid var(--line); padding-top: 18px; }
+  .foot b { color: var(--ink); font-weight: 600; }
+  code.inline { background: var(--code-bg); padding: 1px 7px; border-radius: 6px; font-size: 17px; }
+</style>
+</head>
+<body>
+<section class="slide">
+  <p class="eyebrow">Demo Depot</p>
+  <h1>From a repo to the catalog in one tag</h1>
+  <p class="sub">Install once, let Claude make the repo depot-ready, publish by tagging. Every launch gets its own LaunchDarkly project.</p>
+
+  <div class="cols">
+    <div class="col">
+      <div class="step"><span class="num">1</span><h2>Install once</h2></div>
+      <p class="when">Per machine, about five minutes</p>
+      <ul>
+        <li><b>Claude Code plugin</b> (skill + MCP server)</li>
+      </ul>
+<pre>/plugin marketplace add launchdarkly-labs/demo-depot-publish
+/plugin install demo-depot@demo-depot</pre>
+      <ul>
+        <li><b>The <code class="inline">ddu</code> CLI</b> (Node 20+; Docker only for <code class="inline">ddu run</code>)</li>
+      </ul>
+<pre>npm i -g --allow-remote=root https://github.com/launchdarkly-labs/demo-depot-publish/releases/latest/download/demo-depot-cli.tgz</pre>
+      <ul>
+        <li><b>Tokens</b>, in the portal under Settings: save your <b>LaunchDarkly API token</b> (launches run as you), create a <b>Demo Depot API token</b>, sign the CLI in</li>
+      </ul>
+<pre>ddu auth login   <span class="c"># paste the ddp. token</span>
+ddu auth status</pre>
+    </div>
+
+    <div class="col">
+      <div class="step"><span class="num">2</span><h2>Make the repo depot-ready</h2></div>
+      <p class="when">Per demo, in Claude Code, inside the repo</p>
+      <p>Ask Claude:</p>
+<pre><span class="p">Using the demo-depot skill, make this repo ready for Demo Depot.</span></pre>
+      <p>The skill inventories the code and adds:</p>
+      <ul>
+        <li><code class="inline">demo.yaml</code> manifest: container, port, health check, parameters</li>
+        <li><code class="inline">ld/seed.json</code>: the flags every launch starts with</li>
+        <li><code class="inline">DEMO.md</code> talk track, cover image, publish workflow</li>
+      </ul>
+      <p>Then check it yourself:</p>
+<pre>ddu validate .   <span class="c"># the checks the depot runs</span>
+ddu run          <span class="c"># local run, depot layout</span></pre>
+    </div>
+
+    <div class="col">
+      <div class="step"><span class="num">3</span><h2>Publish and launch</h2></div>
+      <p class="when">Repo must live in launchdarkly-labs or launchdarkly-demos</p>
+<pre>git commit -am "Depot-ready" && git push
+git tag v0.1.0 && git push origin v0.1.0</pre>
+      <ul>
+        <li>GitHub Actions builds the arm64 image and uploads the manifest and seed</li>
+        <li>The depot <b>verifies</b> the version by launching it once (2 to 5 minutes), then DMs you on Slack</li>
+        <li>Any SE opens the catalog, clicks <b>Launch</b>, and gets their own URL and LaunchDarkly project</li>
+      </ul>
+      <p>New version? Bump the tag: <code class="inline">v0.1.1</code>. Done for the day? <b>Tear down</b> from My Demos.</p>
+      <p>Or let Claude do all of it over MCP: <span class="p" style="color:var(--green)">"publish this and launch it when it's verified."</span></p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span><b>Portal</b> demodepot.launchdarklydemos.com &nbsp;·&nbsp; <b>Tools and docs</b> github.com/launchdarkly-labs/demo-depot-publish</span>
+    <span><b>Example</b> github.com/launchdarkly-labs/demo-depot-demo</span>
+  </div>
+</section>
+</body>
+</html>

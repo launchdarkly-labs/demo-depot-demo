@@ -1,0 +1,23 @@
+{
+  "seedVersion": 1,
+  "environments": [{ "key": "demo", "name": "Demo", "color": "7B42BC" }],
+  "flags": [
+    {
+      "key": "promo-banner",
+      "name": "Promo banner",
+      "description": "Shows the free-shipping banner at the top of the site. The page subscribes to changes and updates live.",
+      "kind": "boolean",
+      "variations": [
+        { "value": true, "name": "Show banner" },
+        { "value": false, "name": "Hide banner" }
+      ],
+      "defaults": { "onVariation": 0, "offVariation": 1 },
+      "clientSideAvailability": { "usingEnvironmentId": true },
+      "environments": {
+        "demo": { "on": false, "offVariation": 1, "fallthrough": { "variation": 0 }, "rules": [] }
+      }
+    }
+  ],
+  "segments": [],
+  "aiConfigs": []
+}

@@ -47,6 +47,10 @@ echo "Slug:  $SLUG"
 [ "$DRY" = 1 ] && echo "Mode:  dry-run, nothing will change"
 
 if [ "$YES" != 1 ] && [ "$DRY" != 1 ]; then
+  if [ ! -t 0 ]; then
+    echo "No terminal to confirm on (for example Claude Code's ! runner). Rerun with --yes, or --dry-run to preview." >&2
+    exit 2
+  fi
   printf '\nThis deletes the demo from Demo Depot, the v* tags, and the depot files listed above. Continue? [y/N] '
   read -r ans
   case "$ans" in y|Y|yes) ;; *) echo "aborted"; exit 1 ;; esac
@@ -89,7 +93,21 @@ PY
         fi
         ;;
       404) echo "  '$SLUG' is not in the depot. Nothing to delete." ;;
-      *) echo "  depot API returned HTTP $code: $(cat /tmp/dd-reset-get.json)" >&2; exit 1 ;;
+      *)
+        # The detail view can fail on a half-ingested demo while the delete still works, so try it anyway.
+        echo "  lookup returned HTTP $code: $(cat /tmp/dd-reset-get.json)" >&2
+        if [ "$DRY" = 1 ]; then
+          echo "  (dry-run) DELETE $DD_URL/api/demos/$SLUG?teardown=1 (attempted despite the lookup error)"
+        else
+          echo "  attempting the delete anyway"
+          dcode="$(curl -sS -o /tmp/dd-reset-del.json -w '%{http_code}' -X DELETE -H "Authorization: Bearer $DD_TOKEN" "$DD_URL/api/demos/$SLUG?teardown=1")"
+          case "$dcode" in
+            200) echo "  deleted: $(cat /tmp/dd-reset-del.json)" ;;
+            404) echo "  '$SLUG' is not in the depot after all." ;;
+            *) echo "  delete failed (HTTP $dcode): $(cat /tmp/dd-reset-del.json). Check the depot's ops channel." >&2; exit 1 ;;
+          esac
+        fi
+        ;;
     esac
     rm -f /tmp/dd-reset-get.json /tmp/dd-reset-del.json
   fi

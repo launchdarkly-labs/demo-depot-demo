@@ -12,7 +12,8 @@ web/public/app.js              browser SDK init, flag evaluation, and the change
 web/Dockerfile                 arm64-safe, non-root, HEALTHCHECK on /healthz
 .github/workflows/publish.yml  tagging vX.Y.Z publishes to the depot
 scripts/reset-demo.sh          removes the demo from the depot and the depot files, to run the walkthrough again
-docs/setup-slide.html          one-slide setup guide (plugin, CLI, tokens, publish); docs/setup-slide.png is the rendered copy
+docs/setup-slide.html          one-slide setup guide (plugin, CLI, tokens, publish); .png is the rendered copy,
+                               .pptx the editable deck (rebuild with: uv run --with python-pptx docs/build-setup-slide.py)
 ```
 
 ## Run it locally
